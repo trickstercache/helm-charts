@@ -1,0 +1,19 @@
+apiVersion: v1
+entries:
+  trickster:
+  - apiVersion: v1
+    appVersion: "1"
+    created: "2020-02-27T21:31:29.572426333Z"
+    description: HTTP Reverse Proxy Cache and Time Series Database Accelerator
+    digest: a1d844a36d9c38ee0441725c7715fea99e77cb292fd9dbba0e87d2a3b6dd991b
+    engine: gotpl
+    home: https://github.com/Comcast/trickster
+    icon: https://helm.tricksterproxy.io/img/trickster-horizontal.png
+    name: trickster
+    sources:
+    - https://github.com/Comcast/trickster
+    tillerVersion: '>=2.8.0'
+    urls:
+    - https://github.com/tricksterproxy/helm-charts/releases/download/trickster-1.4.1/trickster-1.4.1.tgz
+    version: 1.4.1
+generated: "2020-02-27T21:31:29.465425556Z"
