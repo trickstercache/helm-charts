@@ -13,10 +13,10 @@ Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
 Once Helm is set up properly, add the repo as follows:
 
 ```console
-$ helm repo add trickster https://helm.tricksterproxy.io/
+$ helm repo add tricksterproxy https://helm.tricksterproxy.io/
 ```
 
-You can then run `helm search repo trickster` to see the charts.
+You can then run `helm search repo tricksterproxy` to see the charts.
 
 ## Contributing
 
