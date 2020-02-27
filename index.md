@@ -22,7 +22,7 @@ helm repo add tricksterproxy https://helm.tricksterproxy.io
 helm search repo tricksterproxy
 ```
 
-## Install Trickster to your Kubernetes cluster with Helm
+## Install Trickster with Helm
 
 ```bash
 helm upgrade -i trickster tricksterproxy/trickster
