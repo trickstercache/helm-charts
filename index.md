@@ -1,5 +1,3 @@
-# Trickster Helm Repository
-
 ![Trickster](https://helm.tricksterproxy.io/img/trickster-horizontal.png)
 
 Trickster is an HTTP Reverse Proxy Cache and Time Series Database Accelerator.
