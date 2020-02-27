@@ -1,10 +1,10 @@
 apiVersion: v1
-appVersion: 1.0.0
-description: Trickster is a reverse proxy cache for the Prometheus HTTP API that dramatically accelerates chart rendering times for any series queried from Prometheus.
+appVersion: 1.0
+description: HTTP Reverse Proxy Cache and Time Series Database Accelerator
 name: trickster
 version: 1.4.1
 home: https://github.com/Comcast/trickster
-icon: https://github.com/Comcast/trickster/blob/master/docs/images/logos/trickster-horizontal-sm.png?raw=true
+icon: https://helm.tricksterproxy.io/img/trickster-horizontal.png
 sources:
   - https://github.com/Comcast/trickster
 engine: gotpl
