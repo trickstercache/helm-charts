@@ -1,8 +1,8 @@
-# Trickster Tracing Helm Repository
+# Trickster Helm Repository
 
 ![Trickster](https://helm.tricksterproxy.io/img/trickster-horizontal.png)
 
-## Add the Trickster Tracing Helm repository
+## Add the Trickster Helm repository
 
 ```bash
 helm repo add tricksterproxy https://helm.tricksterproxy.io
