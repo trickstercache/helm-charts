@@ -9,7 +9,7 @@ entries:
     digest: 13c688a0fe487a831dd72f18991a2ec4c4a658f3d69dea89f22139d57771ac18
     engine: gotpl
     home: https://github.com/Comcast/trickster
-    icon: https://github.com/Comcast/trickster/blob/master/docs/images/logos/trickster-horizontal-sm.png?raw=true
+    icon: https://helm.tricksterproxy.io/img/trickster-horizontal.png
     name: trickster
     sources:
     - https://github.com/Comcast/trickster
