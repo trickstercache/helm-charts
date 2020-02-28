@@ -1,0 +1,14 @@
+# Github Pages auto-generated
+CNAME
+
+# IDE Files
+.vscode/
+
+# MacOS and other operating system artifacts
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
