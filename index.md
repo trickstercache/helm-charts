@@ -4,7 +4,7 @@ Trickster is an HTTP Reverse Proxy Cache and Time Series Database Accelerator.
 
 This is where Trickster hosts its Kubernetes Helm Charts. For more information about Kubernetes, see <https://kubernetes.io>. For more information about Helm, see <https://helm.sh>.
 
-Our main repo, including documentation, is at <https://github.com/Comcast/trickster>.
+Our main repo, including documentation, is at <https://github.com/tricksterproxy/trickster>.
 
 Trickster is Open Source Software, licensed under the Apache 2.0 License
 
