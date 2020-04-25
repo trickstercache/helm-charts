@@ -10,6 +10,6 @@ sources:
 engine: gotpl
 tillerVersion: ">=2.8.0"
 maintainers:
-  - name: James Ranson
-  - name: Adam Ross
-  - name: Christopher Randles
+  - name: jranson
+  - name: LimitlessEarth
+  - name: crandles
