@@ -3,7 +3,7 @@ name: Publish Release - Trickster Chart
 on:
   push:
     branches:
-    - 'trickster-[0-9]+\.[0-9]+'
+    - trickster-*
 
 jobs:
   release:
