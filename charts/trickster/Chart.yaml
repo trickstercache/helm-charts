@@ -9,3 +9,7 @@ sources:
   - https://github.com/tricksterproxy/trickster
 engine: gotpl
 tillerVersion: ">=2.8.0"
+maintainers:
+  - James Ranson
+  - Adam Ross
+  - Christopher Randles
