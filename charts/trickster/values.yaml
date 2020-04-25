@@ -1,6 +1,6 @@
 # Default values for trickster.
 
-# See our documentation at https://github.com/Comcast/trickster/docs/
+# See our documentation at https://github.com/tricksterproxy/trickster/docs/
 
 # Put ints in quotes to ensure they aren't converted to scientific notations.
 # See https://github.com/kubernetes/helm/issues/1707s
@@ -116,10 +116,10 @@ origins:
 #     maxObjectByteSize: "524288"
 
 #     # Each origin type implements their own defaults for hcUpstreamURL, hcVerb and hcQuery,
-#     # which can be overridden per origin with the following configs. See https://github.com/Comcast/trickster/docs/health.md
+#     # which can be overridden per origin with the following configs. See https://github.com/tricksterproxy/trickster/docs/health.md
 
 #     # hcUpstreamURL is the URL Trickster will request against this origin to
-#     # when a health check request is received by Trickster via http://<trickster-endpoint>/trickster/<origin_name>/health 
+#     # when a health check request is received by Trickster via http://<trickster-endpoint>/trickster/<origin_name>/health
 #     # this is the default value for prometheus:
 #     hcUpstreamURL: /api/v1/query
 
@@ -162,7 +162,7 @@ origins:
 #       # clientKeyPath provides the path to a client key for Trickster to use when authenticating with an upstream server
 #       clientKeyPath: /path/to/my/client/key.pem
 
-#     # This section customizes the behavior of Trickster for specific paths. See https://github.com/Comcast/trickster/docs/paths.md
+#     # This section customizes the behavior of Trickster for specific paths. See https://github.com/tricksterproxy/trickster/docs/paths.md
 #     paths:
 #       - name: example1
 #         path: /api/v1/admin/
@@ -194,7 +194,7 @@ origins:
 
 #     # For multi-origin support, provide a unique name.
 #     # Clients can indicate the desired origin in their path (http://trickster.example.com:9090/foo/api/v1/query_range?.....)
-#     # You can also use host-header based routing. See the documentation at https://github.com/Comcast/trickster/docs/multi-origin.md) for more information
+#     # You can also use host-header based routing. See the documentation at https://github.com/tricksterproxy/trickster/docs/multi-origin.md) for more information
 #   - name: foo
 #     isDefault: false
 #     originType: influxdb
@@ -214,7 +214,7 @@ origins:
 
 #     # if using 'bbolt', 'badger', or 'filesystem' you must link a volume as defined below in
 #     # the volumes section on the helm chart. Paths will automatically be generated. Just match the names.
-      #volumeName: example-volume-name
+#     #volumeName: example-volume-name
 
 #     ## Configuration options for the Cache Index
 #     # The Cache Index handles key management and retention for bbolt, filesystem and memory
@@ -315,8 +315,8 @@ origins:
 #       idleCheckFrequencyMs: "60000"
 
 #     filesystem;
-#       # Nothing to include here - this is handled by helm templating. 
-          
+#       # Nothing to include here - this is handled by helm templating.
+
 #     ## Configuration options when using a bbolt Cache
 #     bbolt:
 #       # file defines the file where the Trickster cache will be maintained
@@ -326,7 +326,7 @@ origins:
 #       bucket: trickster
 
 #     badger:
-#       # Nothing to include here - this is handled by helm templating. 
+#       # Nothing to include here - this is handled by helm templating.
 
 # negativeCaches:
 # #  The 'default' negative cache config, mapped by all origins by default, is empty unless you populate it.
@@ -345,7 +345,7 @@ origins:
 #     502: "3"
 
 # tracing:
-# #  The 'default' tracing config, mapped by all origins by default 
+# #  The 'default' tracing config, mapped by all origins by default
 #   - name: default
 
 # #  implementation specifies the Tracing API that you use in your platform.
@@ -397,6 +397,7 @@ profiler:
 prometheusScrape: false
 
 # Number of trickster replicas desired
+## Use a StatefulSet if replicaCount needs to be greater than 1 (see below)
 replicaCount: 1
 
 ## trickster container image
@@ -459,7 +460,7 @@ ingress:
   #     - chart-example.local
 
 ## Enter volumes of type 'persistentVolume', or 'generic'
-## Below are the configuration options for each. 
+## Below are the configuration options for each.
 ## Match the volume names to the volume name per cache.
 ## Multiple caches may map to one volume config.
 volumes:
@@ -471,27 +472,27 @@ volumes:
 
     ## Must include
     mountPath: "/tmp/trickster"
-  
+
     ## trickster data Persistent Volume access modes
     ## Must match those of existing PV or dynamic provisioner
     ## Ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
     ##
     accessModes:
       - ReadWriteOnce
-  
+
     ## trickster data Persistent Volume Claim annotations
     ##
     annotations: {}
-  
+
     ## trickster data Persistent Volume existing claim name
     ## Requires trickster.persistentVolume.enabled: true
     ## If defined, PVC must be created manually before volume will be bound
     existingClaim: ""
-  
+
     ## trickster data Persistent Volume size
     ##
     size: 15Gi
-  
+
     ## trickster data Persistent Volume Storage Class
     ## If defined, storageClassName: <storageClass>
     ## If set to "-", storageClassName: "", which disables dynamic provisioning
@@ -510,27 +511,20 @@ volumes:
     ## Must include
     mountPath: "/tmp/trickster"
 
-
-
-
 ## Annotations to be added to trickster pods
 ##
 podAnnotations: {}
-
-## Use a StatefulSet if replicaCount needs to be greater than 1 (see below)
-##
-replicaCount: 1
 
 ## trickster resource requests and limits
 ## Ref: http://kubernetes.io/docs/user-guide/compute-resources/
 ##
 resources: {}
-  #limits:
-  #cpu: 100m
-  #memory: 128Mi
-  #requests:
-  #cpu: 100m
-  #memory: 128Mi
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 
 ## Security context to be added to trickster pods
 ##
