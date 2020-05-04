@@ -60,32 +60,32 @@ origins:
 #     # pathRoutingDisabled will prevent the origin from being accessible via /origin_name/ path to Trickster. Setting true requires
 #     # the origin to have hosts configured (see below) or be the target of a rule origin (further below), or it will be unreachable.
 #     # default is false
-#     pathRoutingDisabled = false
+#     pathRoutingDisabled: false
 
 #     # ruleName provides the name of the rule config to be used by this origin.
 #     # This is only effective if the originType is 'rule'
 #     # default is empty string
-#     ruleName = ''
+#     ruleName: ''
 
 #     # requestRewriterName is the name of a configured rewriter (in [request_rewriters]) that will modify the request prior to
 #     # processing by the origin client
-#     requestRewriterName = ''
+#     requestRewriterName: ''
 
 #     # tracingName selects the distributed tracing configuration (crafted below) to be used with this origin. default is 'default'
 #     tracingName: 'default'
 
 #     # dearticulateUpstreamRanges, when true, instructs Trickster to make multiple parallel requests to the origin for each
 #     # range needed to fulfill the client request, rather than making a multipart range request. default is false
-#     # dearticulateUpstreamRanges: false
+#     dearticulateUpstreamRanges: false
 
 #     # multipartRangesDisabled, when true, instructs Trickster to return the full object when the client provides
 #     # a multipart range request. The default is false.
-#     # multipartRangesDisabled = false
+#     multipartRangesDisabled: false
 
 #     # compressableTypes defines the Content Types that will be compressed when stored in the Trickster cache
-#     # reasonable defaults are set, so use this with care. To disable compression, set compressableTypes = []
+#     # reasonable defaults are set, so use this with care. To disable compression, set compressableTypes: []
 #     # Default list is provided here:
-#     # compressableTypes = [ 'text/javascript', 'text/css', 'text/plain', 'text/xml', 'text/json', 'application/json', 'application/javascript', 'application/xml' ]
+#     compressableTypes: [ 'text/javascript', 'text/css', 'text/plain', 'text/xml', 'text/json', 'application/json', 'application/javascript', 'application/xml' ]
 
 #     # timeoutSecs defines how many seconds Trickster will wait before aborting and upstream http request.
 #     timeoutSecs: "180"
@@ -329,7 +329,7 @@ origins:
 #       #idleCheckFrequencyMs is the frequency of idle checks made by idle connections reaper.
 #       idleCheckFrequencyMs: "60000"
 
-#     filesystem;
+#     filesystem:
 #       # Nothing to include here - this is handled by helm templating.
 
 #     ## Configuration options when using a bbolt Cache
@@ -370,28 +370,28 @@ origins:
 #     inputIndex: "1"              # split the header value into zero-indexed parts at spaces, use part 1
 #     inputDelimiter: ' '          # parts are delimited by spaces
 #     operation: prefix            # check if the input value prefix matches any of the defined cases:
-#     nextRoute = 'reader-cluster' # by default, route to reader-cluster origin (would need to be defined)
-# 	  cases:
-# 		  case1:
-# 		    matches: ['johndoe:', 'janedoe:']  # if the Authorization header has user johndoe or janedoe,
-# 		    nextRoute: 'writer-cluster'        # route the request to hypothetical writer-cluster origin
+#     nextRoute: 'reader-cluster' # by default, route to reader-cluster origin (would need to be defined)
+#     cases:
+#       case1:
+#         matches: ['johndoe:', 'janedoe:']  # if the Authorization header has user johndoe or janedoe,
+#         nextRoute: 'writer-cluster'        # route the request to hypothetical writer-cluster origin
 #         #
 #         # Other available case configs that are not pertinent to this example:
 #         #
-#         requestRewriterName = ''  # name of a rewriter to process the request if it matches this case
+#         requestRewriterName: ''  # name of a rewriter to process the request if it matches this case
 #                                   # case rewrites are executed prior to giving control back to the rule
-#         redirectURL = ''          # provides a URL to redirect the request if it matches this case
+#         redirectURL: ''          # provides a URL to redirect the request if it matches this case
 # #        
 # #
 # #  Other available rule configs that are not pertinent to this example:
 # #
-#     ingressRequestRewriterName = '' # name of a rewriter to process the request before evaluating the rule
-#     egressRequestRewriterName = ''  # name of a rewriter to process the request after evaluating the rule
+#     ingressRequestRewriterName: '' # name of a rewriter to process the request before evaluating the rule
+#     egressRequestRewriterName: ''  # name of a rewriter to process the request after evaluating the rule
 # #                                   # and handing off to the new route
-#     defaultRequestRewriterName = '' # name of a rewriter to run the request through when there are no matching cases
-#     operationArg = '' # an argument to pass to the operation.
-#     redirectURL = '' # provides a URL to redirect the request in the default case, rather than handing to next_route
-#     maxRuleExecutions = "16"        # limits the max number of per-Request rule-based hops to avoid execution loops.
+#     defaultRequestRewriterName: '' # name of a rewriter to run the request through when there are no matching cases
+#     operationArg: '' # an argument to pass to the operation.
+#     redirectURL: '' # provides a URL to redirect the request in the default case, rather than handing to next_route
+#     maxRuleExecutions: "16"        # limits the max number of per-Request rule-based hops to avoid execution loops.
 
 # #  Configuration Options for Request Rewriter Instructions - see /docs/request_rewriters.md for more info
 #   requestRewriters:
@@ -412,10 +412,10 @@ origins:
 #     collectorURL: ''
 # #  collectorUser is the username credential for authenticating with the tracing backend
 # #  optional jaeger; unused for zipkin and stdout
-#     collectorUser = ''
+#     collectorUser: ''
 # #  collectorPass is the username credential for authenticating with the tracing backend
 # #  optional jaeger; unused for zipkin and stdout
-#     collectorPass = ''
+#     collectorPass: ''
 
 # #  sampleRate sets the probability that a span will be recorded.
 # #  An integer or floating point value of 0 to 1.0 (inclusive) is permitted.
@@ -499,74 +499,74 @@ origins:
 # # options are: "metrics", "reload", "both", or "off"; default is both
 # pprofServer: both
 
-profiler:
-  enabled: false
-  port: 6060
+# profiler:
+#   enabled: false
+#   port: 6060
 
-prometheusScrape: false
+# prometheusScrape: false
 
-# Number of trickster replicas desired
-## Use a StatefulSet if replicaCount needs to be greater than 1 (see below)
-replicaCount: 1
+# # Number of trickster replicas desired
+# ## Use a StatefulSet if replicaCount needs to be greater than 1 (see below)
+# replicaCount: 1
 
-## trickster container image
-##
-image:
-  repository: tricksterproxy/trickster
-  tag: "1.0"
-  pullPolicy: IfNotPresent
+# ## trickster container image
+# ##
+# image:
+#   repository: tricksterproxy/trickster
+#   tag: "1.0"
+#   pullPolicy: IfNotPresent
 
-# Service resource for trickster deplyoment
-# Ref: https://kubernetes.io/docs/concepts/services-networking/service/
-service:
-  annotations: {}
-  labels: {}
-  clusterIP: ""
+# # Service resource for trickster deplyoment
+# # Ref: https://kubernetes.io/docs/concepts/services-networking/service/
+# service:
+#   annotations: {}
+#   labels: {}
+#   clusterIP: ""
 
-  ## List of IP addresses at which the trickster service is available
-  ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
-  ##
-  externalIPs: []
+#   ## List of IP addresses at which the trickster service is available
+#   ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+#   ##
+#   externalIPs: []
 
-  loadBalancerIP: ""
-  loadBalancerSourceRanges: []
-  metricsPort: 8481
-  servicePort: 8480
-  # nodePort: 30000
-  # metricsNodePort: 30001
-  type: ClusterIP
+#   loadBalancerIP: ""
+#   loadBalancerSourceRanges: []
+#   metricsPort: 8481
+#   servicePort: 8480
+#   # nodePort: 30000
+#   # metricsNodePort: 30001
+#   type: ClusterIP
 
-# Ingress resource for trickster service
-# Ref: https://kubernetes.io/docs/concepts/services-networking/ingress/
-ingress:
-  ## If true, trickster Ingress will be created
-  ##
-  enabled: false
+# # Ingress resource for trickster service
+# # Ref: https://kubernetes.io/docs/concepts/services-networking/ingress/
+# ingress:
+#   ## If true, trickster Ingress will be created
+#   ##
+#   enabled: false
 
-  ## trickster Ingress annotations
-  ##
-  annotations: {}
-  #   kubernetes.io/ingress.class: nginx
-  #   kubernetes.io/tls-acme: 'true'
+#   ## trickster Ingress annotations
+#   ##
+#   annotations: {}
+#   #   kubernetes.io/ingress.class: nginx
+#   #   kubernetes.io/tls-acme: 'true'
 
-  ## trickster Ingress additional labels
-  ##
-  extraLabels: {}
+#   ## trickster Ingress additional labels
+#   ##
+#   extraLabels: {}
 
-  ## trickster Ingress hostnames with optional path
-  ## Must be provided if Ingress is enabled
-  ##
-  hosts: []
-  #   - trickster.domain.com
-  #   - domain.com/trickster
+#   ## trickster Ingress hostnames with optional path
+#   ## Must be provided if Ingress is enabled
+#   ##
+#   hosts: []
+#   #   - trickster.domain.com
+#   #   - domain.com/trickster
 
-  ## trickster Ingress TLS configuration
-  ## Secrets must be manually created in the namespace
-  ##
-  tls: []
-  # - secretName: chart-example-tls
-  #   hosts:
-  #     - chart-example.local
+#   ## trickster Ingress TLS configuration
+#   ## Secrets must be manually created in the namespace
+#   ##
+#   tls: []
+#   # - secretName: chart-example-tls
+#   #   hosts:
+#   #     - chart-example.local
 
 ## Enter volumes of type 'persistentVolume', or 'generic'
 ## Below are the configuration options for each.
