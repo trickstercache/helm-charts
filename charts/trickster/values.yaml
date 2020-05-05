@@ -499,74 +499,74 @@ origins:
 # # options are: "metrics", "reload", "both", or "off"; default is both
 # pprofServer: both
 
-# profiler:
-#   enabled: false
-#   port: 6060
+profiler:
+  enabled: false
+  port: 6060
 
-# prometheusScrape: false
+prometheusScrape: false
 
-# # Number of trickster replicas desired
-# ## Use a StatefulSet if replicaCount needs to be greater than 1 (see below)
-# replicaCount: 1
+# Number of trickster replicas desired
+## Use a StatefulSet if replicaCount needs to be greater than 1 (see below)
+replicaCount: 1
 
-# ## trickster container image
-# ##
-# image:
-#   repository: tricksterproxy/trickster
-#   tag: "1.0"
-#   pullPolicy: IfNotPresent
+## trickster container image
+##
+image:
+  repository: tricksterproxy/trickster
+  tag: "1.0"
+  pullPolicy: IfNotPresent
 
-# # Service resource for trickster deplyoment
-# # Ref: https://kubernetes.io/docs/concepts/services-networking/service/
-# service:
-#   annotations: {}
-#   labels: {}
-#   clusterIP: ""
+# Service resource for trickster deplyoment
+# Ref: https://kubernetes.io/docs/concepts/services-networking/service/
+service:
+  annotations: {}
+  labels: {}
+  clusterIP: ""
 
-#   ## List of IP addresses at which the trickster service is available
-#   ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
-#   ##
-#   externalIPs: []
+  ## List of IP addresses at which the trickster service is available
+  ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
+  ##
+  externalIPs: []
 
-#   loadBalancerIP: ""
-#   loadBalancerSourceRanges: []
-#   metricsPort: 8481
-#   servicePort: 8480
-#   # nodePort: 30000
-#   # metricsNodePort: 30001
-#   type: ClusterIP
+  loadBalancerIP: ""
+  loadBalancerSourceRanges: []
+  metricsPort: 8481
+  servicePort: 8480
+  # nodePort: 30000
+  # metricsNodePort: 30001
+  type: ClusterIP
 
-# # Ingress resource for trickster service
-# # Ref: https://kubernetes.io/docs/concepts/services-networking/ingress/
-# ingress:
-#   ## If true, trickster Ingress will be created
-#   ##
-#   enabled: false
+# Ingress resource for trickster service
+# Ref: https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress:
+  ## If true, trickster Ingress will be created
+  ##
+  enabled: false
 
-#   ## trickster Ingress annotations
-#   ##
-#   annotations: {}
-#   #   kubernetes.io/ingress.class: nginx
-#   #   kubernetes.io/tls-acme: 'true'
+  ## trickster Ingress annotations
+  ##
+  annotations: {}
+  #   kubernetes.io/ingress.class: nginx
+  #   kubernetes.io/tls-acme: 'true'
 
-#   ## trickster Ingress additional labels
-#   ##
-#   extraLabels: {}
+  ## trickster Ingress additional labels
+  ##
+  extraLabels: {}
 
-#   ## trickster Ingress hostnames with optional path
-#   ## Must be provided if Ingress is enabled
-#   ##
-#   hosts: []
-#   #   - trickster.domain.com
-#   #   - domain.com/trickster
+  ## trickster Ingress hostnames with optional path
+  ## Must be provided if Ingress is enabled
+  ##
+  hosts: []
+  #   - trickster.domain.com
+  #   - domain.com/trickster
 
-#   ## trickster Ingress TLS configuration
-#   ## Secrets must be manually created in the namespace
-#   ##
-#   tls: []
-#   # - secretName: chart-example-tls
-#   #   hosts:
-#   #     - chart-example.local
+  ## trickster Ingress TLS configuration
+  ## Secrets must be manually created in the namespace
+  ##
+  tls: []
+  # - secretName: chart-example-tls
+  #   hosts:
+  #     - chart-example.local
 
 ## Enter volumes of type 'persistentVolume', or 'generic'
 ## Below are the configuration options for each.
