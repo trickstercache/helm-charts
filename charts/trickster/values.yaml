@@ -418,16 +418,16 @@ origins:
 #     collectorPass: ''
 
 # #  sampleRate sets the probability that a span will be recorded.
-# #  An integer or floating point value of 0 to 1.0 (inclusive) is permitted.
-# #  default is 1 (meaning 100% of requests are recorded)
-#     sampleRate: 1
+# #  A floating point value of 0.0 to 1.0 (inclusive) is permitted.
+# #  default is 1.0 (meaning 100% of requests are recorded)
+#     sampleRate: 1.0
 
 # #  tags will append these tags/attributes to each trace that is recorded.
 # #  only string key/value tags are supported. numeric values, etc are not.
 # #  default tags list is empty
 #     tags:
-#       "tag1": "value1"
-#       "tag2": "value2"
+#       tag1: value1
+#       tag2: value2
 
 # #  configurations for this tracer, specific to jaeger
 #     jaeger:
