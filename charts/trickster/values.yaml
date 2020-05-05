@@ -381,7 +381,7 @@ origins:
 #         requestRewriterName: ''  # name of a rewriter to process the request if it matches this case
 #                                   # case rewrites are executed prior to giving control back to the rule
 #         redirectURL: ''          # provides a URL to redirect the request if it matches this case
-# #        
+# #
 # #
 # #  Other available rule configs that are not pertinent to this example:
 # #
@@ -465,7 +465,7 @@ origins:
 # # Configuration Options for Config Reloading
 # reloading:
 #   # listenPort defines the port where Trickster's config reload server listens
-#   # 8484 is the default 
+#   # 8484 is the default
 #   listenPort: "8484"
 #   # listenAddress defines the ip where Trickster's config reload server listens
 #   # empty by default, listening on all interfaces
