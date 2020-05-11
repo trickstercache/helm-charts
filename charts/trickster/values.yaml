@@ -422,6 +422,10 @@ origins:
 # #  default is 1.0 (meaning 100% of requests are recorded)
 #     sampleRate: 1.0
 
+# #  omitTags is a list of tag names that, while normally added by Trickster to various spans,
+# #  are omitted for spans produced by this tracer. The default setting is empty list.
+#     omitTags: []
+
 # #  tags will append these tags/attributes to each trace that is recorded.
 # #  only string key/value tags are supported. numeric values, etc are not.
 # #  default tags list is empty

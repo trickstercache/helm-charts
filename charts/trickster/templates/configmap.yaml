@@ -478,6 +478,9 @@ data:
         {{- if .sampleRate }}
       sample_rate = {{ .sampleRate }}
         {{- end }}
+        {{- if .omitTags }}
+      omit_tags = [ '{{- join "', '" .omitTags }}' ]
+        {{- end }}
         {{- if .tags }}
       
         {{ printf "[tracing.%s.tags]" .name }}
