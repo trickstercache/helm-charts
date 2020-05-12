@@ -193,6 +193,9 @@ data:
         {{- if .cacheKeyPrefix }}
       cache_key_prefix = {{ .cacheKeyPrefix | quote }}
         {{- end }}
+        {{- if .forwardedHeaders }}
+      forwarded_headers = {{ .forwardedHeaders | quote }}
+        {{- end }}
         {{- if .negativeCacheName }}
       negative_cache_name = {{ .negativeCacheName | quote }}
         {{- end }}
