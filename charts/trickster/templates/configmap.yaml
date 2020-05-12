@@ -16,6 +16,9 @@ data:
     {{- if .pprofServer }}
     pprof_server = {{ .pprofServer | quote }}
     {{- end }}
+    {{- if .serverName }}
+    server_name = {{ .serverName | quote }}
+    {{- end }}
 
     [frontend]
     listen_port = {{ .Values.service.servicePort }}

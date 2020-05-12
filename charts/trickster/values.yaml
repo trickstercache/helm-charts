@@ -503,6 +503,10 @@ origins:
 # # options are: "metrics", "reload", "both", or "off"; default is both
 # pprofServer: both
 
+# # serverName provides the name of this server instance, used to self-identfy in Via and other Forwarding headers
+## serverName defaults to os.Hostname() when left blank
+# serverName: ''
+
 profiler:
   enabled: false
   port: 6060
