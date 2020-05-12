@@ -13,6 +13,12 @@ data:
     {{- if .Values.pingHandlerPath }}
     ping_handler_path = {{ .Values.pingHandlerPath | quote }}
     {{- end }}
+    {{- if .pprofServer }}
+    pprof_server = {{ .pprofServer | quote }}
+    {{- end }}
+    {{- if .serverName }}
+    server_name = {{ .serverName | quote }}
+    {{- end }}
 
     [frontend]
     listen_port = {{ .Values.service.servicePort }}
@@ -184,14 +190,26 @@ data:
         {{- if .cacheName }}
       cache_name = {{ .cacheName | quote }}
         {{- end }}
-        {{- if .tracingName }}
-      tracing_name = {{ .tracingName | quote }}
-        {{- end }}
         {{- if .cacheKeyPrefix }}
       cache_key_prefix = {{ .cacheKeyPrefix | quote }}
         {{- end }}
+        {{- if .forwardedHeaders }}
+      forwarded_headers = {{ .forwardedHeaders | quote }}
+        {{- end }}
         {{- if .negativeCacheName }}
       negative_cache_name = {{ .negativeCacheName | quote }}
+        {{- end }}
+        {{- if .pathRoutingDisabled }}
+      path_routing_disabled = {{ .pathRoutingDisabled | quote }}
+        {{- end }}
+        {{- if .ruleName }}
+      rule_name = {{ .ruleName | quote }}
+        {{- end }}
+        {{- if .requestRewriterName }}
+      req_rewriter_name = {{ .requestRewriterName | quote }}
+        {{- end }}
+        {{- if .tracingName }}
+      tracing_name = {{ .tracingName | quote }}
         {{- end }}
         {{- if .dearticulateUpstreamRanges }}
       dearticulate_upstream_ranges = {{ .dearticulateUpstreamRanges }}
@@ -295,6 +313,9 @@ data:
             {{- if .handler }}
           handler = {{ .handler | quote  }}
             {{- end }}
+            {{- if .requestRewriterName }}
+          req_rewriter_name = {{ .requestRewriterName | quote }}
+            {{- end }}
             {{- if .responseCode }}
           response_code = {{ .responseCode }}
             {{- end }}
@@ -358,21 +379,136 @@ data:
       {{- end }}
     {{- end }}
     {{- end }}
+    {{- if (.Values.rules) }}
+      {{- if gt (len .Values.rules) 0 }}
+
+    [rules]
+        {{- range .Values.rules }}
+          {{- $ruleName := .name }}
+      {{ printf "[rules.%s]" .name }}
+          {{- if .inputSource }}
+      input_source = {{ .inputSource | quote }}
+          {{- end }}
+          {{- if .inputKey }}
+      input_key = {{ .inputKey | quote }}
+          {{- end }}
+          {{- if .inputType }}
+      input_type = {{ .inputType | quote }}
+          {{- end }}
+          {{- if .inputEncoding }}
+      input_encoding = {{ .inputEncoding | quote }}
+          {{- end }}
+          {{- if .inputIndex }}
+      input_index = {{ .inputIndex }}
+          {{- end }}
+          {{- if .inputDelimiter }}
+      input_delimiter = {{ .inputDelimiter | quote }}
+          {{- end }}
+          {{- if .operation }}
+      operation = {{ .operation | quote }}
+          {{- end }}
+          {{- if .operationArg }}
+      operation_arg = {{ .operationArg | quote }}
+          {{- end }}
+          {{- if .nextRoute }}
+      next_route = {{ .nextRoute | quote }}
+          {{- end }}
+          {{- if .redirectURL }}
+      redirect_url = {{ .redirectURL | quote }}
+          {{- end }}
+          {{- if .ingressRequestRewriterName }}
+      ingress_req_rewriter_name = {{ .ingressRequestRewriterName | quote }}
+          {{- end }}
+          {{- if .egressRequestRewriterName }}
+      egress_req_rewriter_name = {{ .egressRequestRewriterName | quote }}
+          {{- end }}
+          {{- if .defaultRequestRewriterName }}
+      default_req_rewriter_name = {{ .defaultRequestRewriterName | quote }}
+          {{- end }}
+          {{- if .maxRuleExecutions }}
+      max_rule_executions = {{ .maxRuleExecutions | quote }}
+          {{- end }}
+          {{- if (.cases) }}
+            {{- if gt (len .cases) 0 }}
+      {{ printf "[rules.%s.cases]" .name }}
+              {{- range .cases }}
+        {{ printf "[rules.%s.cases.%s]" $ruleName .name }}
+        matches = [ '{{- join "', '" .matches }}' ]
+                {{- if .nextRoute }}
+        next_route = {{ .nextRoute | quote }}
+                {{- end }}
+                {{- if .redirectURL }}
+        redirect_url = {{ .redirectURL | quote }}
+                {{- end }}
+                {{- if .requestRewriterName }}
+        req_rewriter_name = {{ .requestRewriterName | quote }}
+                {{- end }}
+              {{- end }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.requestRewriters }}
+
+    [request_rewriters]
+      {{- range .Values.requestRewriters }}
+      {{ printf "[request_rewriters.%s]" .name }}
+      instructions = [
+        {{- range .instructions }}
+        [ '{{- join "', '" . }}' ],
+        {{- end }}
+      ]
+      {{- end }}
+    {{- end }}
+    {{- if .Values.tracing }}
 
     [tracing]
-    {{- range .Values.tracing }}
+      {{- range .Values.tracing }}
       {{ printf "[tracing.%s]" .name }}
-      {{- if .implementation }}
-      implementation = {{ .implementation | quote }}
-      {{- end }}
-      {{- if .exporter }}
-      exporter = {{ .exporter | quote }}
-      {{- end }}
-      {{- if .collector }}
-      collector = {{ .collector | quote }}
-      {{- end }}
-      {{- if .sampleRate }}
+        {{- if .tracerType }}
+      tracer_type = {{ .tracerType | quote }}
+        {{- end }}
+        {{- if .serviceName }}
+      service_name = {{ .serviceName | quote }}
+        {{- end }}
+        {{- if .collectorURL }}
+      collector_url = {{ .collectorURL | quote }}
+        {{- end }}
+        {{- if .collectorUser }}
+      collector_user = {{ .collectorUser | quote }}
+        {{- end }}
+        {{- if .collectorPass }}
+      collector_pass = {{ .collectorPass | quote }}
+        {{- end }}
+        {{- if .sampleRate }}
       sample_rate = {{ .sampleRate }}
+        {{- end }}
+        {{- if .omitTags }}
+      omit_tags = [ '{{- join "', '" .omitTags }}' ]
+        {{- end }}
+        {{- if .tags }}
+      
+        {{ printf "[tracing.%s.tags]" .name }}
+          {{- range $key, $value := .tags }}
+        {{ $key }} = {{ $value | quote }}
+          {{- end }}
+        {{- end }}
+        {{- if .jaeger }}
+      
+        {{ printf "[tracing.%s.jaeger]" .name }}
+          {{- if .endpointType }}
+        endpoint_type = {{ .endpointType | quote }}
+          {{- end }}
+        {{- end }}
+        {{- if .stdout }}
+      
+        {{ printf "[tracing.%s.stdout]" .name }}
+          {{- if .prettyPrint }}
+        pretty_print = {{ .prettyPrint }}
+          {{- end }}
+        {{- end }}
+
       {{- end }}
     {{- end }}
 
@@ -384,6 +520,25 @@ data:
       {{- if .Values.metrics.listenAddress }}
     listen_address = {{ .Values.metrics.listenAddress }}
       {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.reloading }}
+
+    [reloading]
+      {{- if .Values.reloading.listenPort }}
+    listen_port = {{ .Values.reloading.listenPort }}
+      {{- end }}
+      {{- if .Values.reloading.listenAddress }}
+    listen_address = {{ .Values.reloading.listenAddress | quote }}
+      {{- end }}
+      {{- if .Values.reloading.handlerPath }}
+    handler_path = {{ .Values.reloading.handlerPath | quote }}
+      {{- end }}
+      {{- if .Values.reloading.drainTimeoutSecs }}
+    drain_timeout_secs = {{ .Values.reloading.drainTimeoutSecs }}
+      {{- end }}
+      {{- if .Values.reloading.rateLimitSecs }}
+    rate_limit_secs = {{ .Values.reloading.rateLimitSecs }}
       {{- end }}
     {{- end }}
     {{- if .Values.logging }}

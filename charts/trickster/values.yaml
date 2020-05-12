@@ -52,26 +52,45 @@ origins:
 
 #     # cacheKeyPrefix defines the prefix this origin appends to cache keys. When using a shared cache like Redis, this can
 #     # help partition multiple trickster instances that may have the same same hostname or ip address (the default prefix)
-#     # cacheKeyPrefix: 'example'
+#     cacheKeyPrefix: example
+
+#     # forwardedHeaders indicates whether Trickster should use 'Forwarded', 'X-Forwarded-*'
+#     # or no forwarded headers when communicating with origins. A Via header is always sent,
+#     # Options are 'standard', 'x', 'both', or 'none'; default is 'standard'
+#     forwardedHeaders: standard
 
 #     # negativeCacheName identifies the name of the negative cache (configured above) to be used with this origin. default is 'default'
-#     negativeCacheName: 'default'
+#     negativeCacheName: default
+
+#     # pathRoutingDisabled will prevent the origin from being accessible via /origin_name/ path to Trickster. Setting true requires
+#     # the origin to have hosts configured (see below) or be the target of a rule origin (further below), or it will be unreachable.
+#     # default is false
+#     pathRoutingDisabled: false
+
+#     # ruleName provides the name of the rule config to be used by this origin.
+#     # This is only effective if the originType is 'rule'
+#     # default is empty string
+#     ruleName: ''
+
+#     # requestRewriterName is the name of a configured rewriter (in [request_rewriters]) that will modify the request prior to
+#     # processing by the origin client
+#     requestRewriterName: ''
 
 #     # tracingName selects the distributed tracing configuration (crafted below) to be used with this origin. default is 'default'
-#     tracingName: 'default'
+#     tracingName: default
 
 #     # dearticulateUpstreamRanges, when true, instructs Trickster to make multiple parallel requests to the origin for each
 #     # range needed to fulfill the client request, rather than making a multipart range request. default is false
-#     # dearticulateUpstreamRanges: false
+#     dearticulateUpstreamRanges: false
 
 #     # multipartRangesDisabled, when true, instructs Trickster to return the full object when the client provides
 #     # a multipart range request. The default is false.
-#     # multipartRangesDisabled = false
+#     multipartRangesDisabled: false
 
 #     # compressableTypes defines the Content Types that will be compressed when stored in the Trickster cache
-#     # reasonable defaults are set, so use this with care. To disable compression, set compressableTypes = []
+#     # reasonable defaults are set, so use this with care. To disable compression, set compressableTypes: []
 #     # Default list is provided here:
-#     # compressableTypes = [ 'text/javascript', 'text/css', 'text/plain', 'text/xml', 'text/json', 'application/json', 'application/javascript', 'application/xml' ]
+#     compressableTypes: [ 'text/javascript', 'text/css', 'text/plain', 'text/xml', 'text/json', 'application/json', 'application/javascript', 'application/xml' ]
 
 #     # timeoutSecs defines how many seconds Trickster will wait before aborting and upstream http request.
 #     timeoutSecs: "180"
@@ -96,7 +115,7 @@ origins:
 
 #     # timeseriesEvictionMethod selects the metholodogy used to determine which timestamps are removed once
 #     # the timeseriesEvictionMethod limit is reached. options are 'oldest' and 'lru'.
-#     timeseriesEvictionMethod: "oldest"
+#     timeseriesEvictionMethod: oldest
 
 #     # fastForwardDisable, when set to true, will turn off the 'fast forward' feature for any requests proxied to this origin
 #     fastForwardDisable: true
@@ -182,6 +201,7 @@ origins:
 #         collapsedForwarding: progressive                  # see /docs/collapsed_forwarding.md
 #         matchType: prefix                                 # this path is routed using prefix matching
 #         handler: proxycache                               # this path is routed through the cache
+#         requestRewriterName: 'example-rewriter'           # name of a rewriter to modify the request prior to handling
 #         cacheKeyParams: [ 'ex_param1', 'ex_param2' ]      # the cache key will be hashed with these query parameters (GET)
 #         cacheKeyFormFields: [ 'ex_param1', 'ex_param2' ]  # or these form fields (POST)
 #         cacheKeyHeaders: [ 'X-Example-Header' ]           # and these request headers, when present in the incoming request
@@ -314,7 +334,7 @@ origins:
 #       #idleCheckFrequencyMs is the frequency of idle checks made by idle connections reaper.
 #       idleCheckFrequencyMs: "60000"
 
-#     filesystem;
+#     filesystem:
 #       # Nothing to include here - this is handled by helm templating.
 
 #     ## Configuration options when using a bbolt Cache
@@ -344,38 +364,132 @@ origins:
 #     500: "3"
 #     502: "3"
 
+# #  Configuration Options for Request Routing Rules - see /docs/rule.md for more information
+# rules:
+# #  This example rule will route a request to a reader or writer origin based on the Authorization (username) header
+#   example:
+#     inputSource: header       # path, host, param
+#     inputKey: Authorization   # Authorization: Basic SomeBase64EncodedString
+#     inputType: string
+#     inputEncoding: base64
+#     inputIndex: "1"              # split the header value into zero-indexed parts at spaces, use part 1
+#     inputDelimiter: ' '          # parts are delimited by spaces
+#     operation: prefix            # check if the input value prefix matches any of the defined cases:
+#     nextRoute: 'reader-cluster' # by default, route to reader-cluster origin (would need to be defined)
+#     cases:
+#       case1:
+#         matches: ['johndoe:', 'janedoe:']  # if the Authorization header has user johndoe or janedoe,
+#         nextRoute: 'writer-cluster'        # route the request to hypothetical writer-cluster origin
+#         #
+#         # Other available case configs that are not pertinent to this example:
+#         #
+#         requestRewriterName: ''  # name of a rewriter to process the request if it matches this case
+#                                   # case rewrites are executed prior to giving control back to the rule
+#         redirectURL: ''          # provides a URL to redirect the request if it matches this case
+# #
+# #
+# #  Other available rule configs that are not pertinent to this example:
+# #
+#     ingressRequestRewriterName: '' # name of a rewriter to process the request before evaluating the rule
+#     egressRequestRewriterName: ''  # name of a rewriter to process the request after evaluating the rule
+# #                                   # and handing off to the new route
+#     defaultRequestRewriterName: '' # name of a rewriter to run the request through when there are no matching cases
+#     operationArg: '' # an argument to pass to the operation.
+#     redirectURL: '' # provides a URL to redirect the request in the default case, rather than handing to next_route
+#     maxRuleExecutions: "16"        # limits the max number of per-Request rule-based hops to avoid execution loops.
+
+# #  Configuration Options for Request Rewriter Instructions - see /docs/request_rewriters.md for more info
+#   requestRewriters:
+#     exampleSetUpstreamUser:
+#       instructions: |-
+#         - ['header', 'set', 'Authorization', 'Basic SomeBase64EncodedCredentials']
+
 # tracing:
 # #  The 'default' tracing config, mapped by all origins by default
 #   - name: default
-
-# #  implementation specifies the Tracing API that you use in your platform.
-# #  options are: 'opentelemetry' (default) and 'opentracing'
-#     implementation: 'opentelemetry'
-
-# #  exporter specifies the tracing format sent to the collection system
-# #  options are: jaeger, recorder, stdout or noop.  noop is the default
-#     exporter: 'noop'
-
-# #  collector is the URL of the trace collector, which MUST accept the traceExporter format
-# #  by default, empty string, meaning no traces are sent to the collector
-#     collector: ''
+# #  tracerType specifies the tracing format sent to the collection system
+# #  options are: jaeger, zipkin, stdout or none.  none is the default
+#     tracerType: none
+# #  serviceName sets the service.name tag in tracers generated by this tracer
+#     serviceName: 'trickster'
+# #  collectorURL is the URL of the tracing backend
+# #  required for zipkin and jaeger, unused for stdout. default ''
+#     collectorURL: ''
+# #  collectorUser is the username credential for authenticating with the tracing backend
+# #  optional jaeger; unused for zipkin and stdout
+#     collectorUser: ''
+# #  collectorPass is the username credential for authenticating with the tracing backend
+# #  optional jaeger; unused for zipkin and stdout
+#     collectorPass: ''
 
 # #  sampleRate sets the probability that a span will be recorded.
-# #  An integer or floating point value of 0 to 1.0 (inclusive) is permitted.
-# #  default is 1 (meaning 100% of requests are recorded)
-#     sampleRate: 1
+# #  A floating point value of 0.0 to 1.0 (inclusive) is permitted.
+# #  default is 1.0 (meaning 100% of requests are recorded)
+#     sampleRate: 1.0
+
+# #  omitTags is a list of tag names that, while normally added by Trickster to various spans,
+# #  are omitted for spans produced by this tracer. The default setting is empty list.
+#     omitTags: []
+
+# #  tags will append these tags/attributes to each trace that is recorded.
+# #  only string key/value tags are supported. numeric values, etc are not.
+# #  default tags list is empty
+#     tags:
+#       tag1: value1
+#       tag2: value2
+
+# #  configurations for this tracer, specific to jaeger
+#     jaeger:
+# #    endpointType indicates whether the jaeger tracing backend is a 'collector' or 'agent'
+# #    default is 'collector'
+#      endpointType: collector
+
+# #  configurations for this tracer, specific to stdout
+#     stdout:
+# #    prettyPrint indicates whether the output to stdout is formatted for better human readability
+# #    default is false
+#      prettyPrint: false
+
+# #  ## additional tracing config examples
 
 # #  another example tracing config named 'example' using jaeger backend and a 50% sample rate
 #   - name: example
-#     implementation: 'opentelemetry'
-#     exporter: 'jaeger'
-#     collector: 'https://jaeger.example.com/'
+#     tracerType: jaeger
+#     collectorURL: 'https://jaeger.example.com/'
 #     sampleRate: .5
+#     jaeger:
+#       endpointType: agent
+
+# #  another example tracing config named 'zipkin-example' using zipkin backend and a 10% sample rate
+#   - name: example
+#     tracerType: zipkin
+#     collectorURL: 'https://zipkin.example.com/'
+#     sampleRate: .1
 
 # metrics:
 #   # listenAddress defines the ip that Trickster's metrics server listens on at /metrics
 #   # empty by default, listening on all interfaces
 #   listenAddress: ""
+
+# # Configuration Options for Config Reloading
+# reloading:
+#   # listenPort defines the port where Trickster's config reload server listens
+#   # 8484 is the default
+#   listenPort: "8484"
+#   # listenAddress defines the ip where Trickster's config reload server listens
+#   # empty by default, listening on all interfaces
+#   listenAddress: ''
+#   # handlerPath defines the HTTP path where the Reload interface is available.
+#   # by default, this is '/trickster/config/reload'
+#   handlerPath: '/trickster/config/reload'
+#   # drainTimeoutSecs defines how long old HTTP listeners will live to allow
+#   # outstanding connection to close organically, before the listener is forcefully closed
+#   # the default is 30
+#   drainTimeoutSecs: "30"
+#   # rateLimitSecs specifies the rate limit timeout duration to apply to the HTTP reload interface.
+#   # The reload interface is disabled for this duration of time whenever a config reload request is
+#   # made that fails because the underlying config file is unmodified. default is 3
+#   rateLimitSecs: "3"
 
 # # These are the default values for logging
 # logging:
@@ -389,6 +503,14 @@ origins:
 # # pingHandlerPath provides the HTTP path you will use to perform an uptime health check against Trickster
 # # which can be reached at http://your-trickster-endpoint:port/$ping_handler_path
 # pingHandlerPath: /trickster/ping
+
+# # pprofServer provides the name of the http listener that will host the pprof debugging routes
+# # options are: "metrics", "reload", "both", or "off"; default is both
+# pprofServer: both
+
+# # serverName provides the name of this server instance, used to self-identfy in Via and other Forwarding headers
+## serverName defaults to os.Hostname() when left blank
+# serverName: ''
 
 profiler:
   enabled: false
@@ -421,8 +543,8 @@ service:
 
   loadBalancerIP: ""
   loadBalancerSourceRanges: []
-  metricsPort: 8080
-  servicePort: 9090
+  metricsPort: 8481
+  servicePort: 8480
   # nodePort: 30000
   # metricsNodePort: 30001
   type: ClusterIP
