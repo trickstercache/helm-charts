@@ -504,6 +504,11 @@ origins:
 # # which can be reached at http://your-trickster-endpoint:port/$ping_handler_path
 # pingHandlerPath: /trickster/ping
 
+# # healthHandlerPath provides the HTTP path prefix you will use to perform an uptime health check against
+# # configured Trickster origins via http://trickster/$health_handler_path/$origin_name
+# # default is '/trickster/health'. Set to empty string to fully disable upstream health checking
+# healthHandlerPath = '/trickster/health'
+
 # # pprofServer provides the name of the http listener that will host the pprof debugging routes
 # # options are: "metrics", "reload", "both", or "off"; default is both
 # pprofServer: both
