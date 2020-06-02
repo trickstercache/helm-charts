@@ -13,6 +13,9 @@ data:
     {{- if .Values.pingHandlerPath }}
     ping_handler_path = {{ .Values.pingHandlerPath | quote }}
     {{- end }}
+    {{- if .Values.healthHandlerPath }}
+    health_handler_path = {{ .Values.healthHandlerPath | quote }}
+    {{- end }}
     {{- if .pprofServer }}
     pprof_server = {{ .pprofServer | quote }}
     {{- end }}
