@@ -518,6 +518,12 @@ profiler:
 
 prometheusScrape: false
 
+prometheus:
+  serviceMonitor:
+    enabled: false
+    interval: 30s
+    labels: {}
+
 # Number of trickster replicas desired
 ## Use a StatefulSet if replicaCount needs to be greater than 1 (see below)
 replicaCount: 1
