@@ -537,7 +537,7 @@ replicaCount: 1
 ##
 image:
   repository: tricksterproxy/trickster
-  tag: "1.0"
+  tag: "1.1"
   pullPolicy: IfNotPresent
 
 # Service resource for trickster deplyoment
