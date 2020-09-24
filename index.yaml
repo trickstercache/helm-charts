@@ -3,6 +3,25 @@ entries:
   trickster:
   - apiVersion: v1
     appVersion: "1.1"
+    created: "2020-09-24T15:25:49.307232385Z"
+    description: Trickster is an HTTP Reverse Proxy Cache and time series query accelerator.
+    digest: 252456c9287adbadf3ba591117ef156f331d5ee35606c55dfbd752e7ba0f7ce2
+    engine: gotpl
+    home: https://github.com/tricksterproxy/trickster
+    icon: https://helm.tricksterproxy.io/img/trickster-horizontal.png
+    maintainers:
+    - name: jranson
+    - name: LimitlessEarth
+    - name: crandles
+    name: trickster
+    sources:
+    - https://github.com/tricksterproxy/trickster
+    tillerVersion: '>=2.8.0'
+    urls:
+    - https://github.com/tricksterproxy/helm-charts/releases/download/trickster-1.5.3/trickster-1.5.3.tgz
+    version: 1.5.3
+  - apiVersion: v1
+    appVersion: "1.1"
     created: "2020-09-24T13:10:26.354345079Z"
     description: Trickster is an HTTP Reverse Proxy Cache and time series query accelerator.
     digest: 0416e968082e8a2247d8a394fe37b7ef66d8e092f478f6e04a2b7df91fae6a77
