@@ -26,8 +26,6 @@ spec:
     {{- end }}    
       labels:
         {{- include "trickster.labels" . | nindent 8 }}
-      annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
     spec:
 {{- if .Values.affinity }}
       affinity:
