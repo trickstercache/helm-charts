@@ -4,7 +4,7 @@ metadata:
 {{- if or .Values.service.annotations .Values.prometheusScrape }}
   annotations:
   {{- if .Values.service.annotations }}
-{{ toYaml .Values.service.annotations | indent 4 }}
+{{ toYaml .Values.service.annotations | nindent 4 }}
   {{- end }}
   {{- if .Values.prometheusScrape }}
     prometheus.io/scrape: {{ .Values.prometheusScrape | quote }}
@@ -54,5 +54,5 @@ spec:
     {{- end }}
   selector:
     app: {{ template "trickster.name" . }}
-    {{- include "trickster.labels" . | indent 6 }}
+    {{- include "trickster.labels" . | indent 4 }}
   type: "{{ .Values.service.type }}"
