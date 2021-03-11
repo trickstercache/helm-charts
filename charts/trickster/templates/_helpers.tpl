@@ -40,7 +40,7 @@ app.kubernetes.io/name: {{ template "trickster.name" . }}
 app.kubernetes.io/part-of: {{ template "trickster.name" . }} 
 app.kubernetes.io/version: "{{ .Chart.Version }}"
 helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }} 
-tricksterproxy.io/version: {{ .Chart.AppVersion }}
+tricksterproxy.io/version: "{{ .Chart.AppVersion }}"
 {{- if .Values.customLabels }}
 {{ toYaml .Values.customLabels | indent 4 }}
 {{- end }}
