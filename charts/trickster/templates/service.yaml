@@ -14,7 +14,8 @@ metadata:
 {{- end }}
   name: {{ template "trickster.fullname" . }}
   labels:
-    {{- include "trickster.labels" . | nindent 4 }}
+    app: {{ template "trickster.name" . }}
+    {{- include "trickster.labels" . | indent 4 }}
 {{- if .Values.service.labels }}
 {{ toYaml .Values.service.labels | indent 4 }}
 {{- end }}
@@ -52,5 +53,6 @@ spec:
       nodePort: {{ .Values.service.metricsNodePort }}
     {{- end }}
   selector:
-    {{- include "trickster.matchLabels" . | nindent 4 }}
+    app: {{ template "trickster.name" . }}
+    {{- include "trickster.labels" . | indent 6 }}
   type: "{{ .Values.service.type }}"

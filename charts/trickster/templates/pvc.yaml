@@ -10,7 +10,8 @@ metadata:
 {{ toYaml .annotations | indent 4 }}
   {{- end }}
   labels:
-    {{- include "trickster.labels" $ | nindent 4 }}
+    app: {{ template "trickster.name" . }}
+    {{- include "trickster.labels" . | indent 4 }}
   name: {{ .volName | printf "trickster-%s-claim" }}
 spec:
   accessModes:
