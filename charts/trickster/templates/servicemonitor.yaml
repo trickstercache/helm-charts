@@ -5,7 +5,8 @@ metadata:
   name: {{ template "trickster.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    {{- include "trickster.labels" . | nindent 4 }}
+    app: {{ template "trickster.name" . }}
+    {{- include "trickster.labels" . | indent 4 }}
 {{- if .Values.prometheus.serviceMonitor.labels }}
 {{ toYaml .Values.prometheus.serviceMonitor.labels | indent 4 }}
 {{- end }}
@@ -13,7 +14,8 @@ spec:
   jobLabel: {{ template "trickster.name" . }}
   selector:
     matchLabels:
-    {{- include "trickster.labels" . | nindent 6 }}
+      app: {{ template "trickster.name" . }}
+      {{- include "trickster.labels" . | indent 6 }}
 {{- if .Values.service.labels }}
 {{ toYaml .Values.service.labels | indent 4 }}
 {{- end }}

@@ -6,12 +6,14 @@ metadata:
 {{ toYaml .Values.deploymentAnnotations | indent 4 }}
 {{- end }}
   labels:
-    {{- include "trickster.labels" . | nindent 4 }}
+    app: {{ template "trickster.name" . }}
+    {{- include "trickster.labels" . | indent 4 }}
   name: {{ template "trickster.fullname" . }}
 spec:
   selector:
     matchLabels:
-      {{- include "trickster.matchLabels" . | nindent 6 }}
+      app: {{ template "trickster.name" . }}
+      {{- include "trickster.selectors" . | indent 6 }}
   replicas: {{ .Values.replicaCount }}
   {{- if .Values.strategy }}
   strategy:
@@ -25,7 +27,8 @@ spec:
 {{ toYaml .Values.podAnnotations | indent 8 }}
     {{- end }}    
       labels:
-        {{- include "trickster.labels" . | nindent 8 }}
+        app: {{ template "trickster.name" . }}
+        {{- include "trickster.labels" . | indent 8 }}
     spec:
 {{- if .Values.affinity }}
       affinity:

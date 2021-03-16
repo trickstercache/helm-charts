@@ -11,7 +11,8 @@ metadata:
 {{ toYaml .Values.ingress.annotations | indent 4 }}
 {{- end }}
   labels:
-    {{- include "trickster.labels" . | nindent 4 }}
+    app: {{ template "trickster.name" . }}
+    {{- include "trickster.labels" . | indent 4 }}
 {{- range $key, $value := .Values.ingress.extraLabels }}
     {{ $key }}: {{ $value }}
 {{- end }}

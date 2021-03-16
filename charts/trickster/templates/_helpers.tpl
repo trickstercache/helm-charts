@@ -31,25 +31,25 @@ Create chart name and version as used by the chart label.
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
+{{/* Generate basic labels */}}
+{{- define "trickster.labels" }}
+app.kubernetes.io/component: trickster-infra
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/name: {{ template "trickster.name" . }}
+app.kubernetes.io/part-of: {{ template "trickster.name" . }} 
+app.kubernetes.io/version: "{{ .Chart.Version }}"
+helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }} 
+tricksterproxy.io/version: "{{ .Chart.AppVersion }}"
+{{- if .Values.customLabels }}
+{{ toYaml .Values.customLabels | indent 4 }}
+{{- end }}
+{{- end }}
+
 {{/*
-Create unified labels for trickster
+Specify default selectors
 */}}
-{{- define "trickster.common.matchLabels" -}}
-app: {{ template "trickster.name" . }}
-release: {{ .Release.Name }}
-{{- end -}}
-
-{{- define "trickster.common.metaLabels" -}}
-chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-heritage: {{ .Release.Service }}
-{{- end -}}
-
-{{- define "trickster.labels" -}}
-{{ include "trickster.matchLabels" . }}
-{{ include "trickster.common.metaLabels" . }}
-{{- end -}}
-
-{{- define "trickster.matchLabels" -}}
-component: {{ template "trickster.name" . }}
-{{ include "trickster.common.matchLabels" . }}
-{{- end -}}
+{{- define "trickster.selectors" }}
+app.kubernetes.io/name: {{ template "trickster.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
