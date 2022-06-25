@@ -567,10 +567,13 @@ ingress:
   ##
   enabled: false
 
+  ## Ingress resource class
+  ##
+  className: ""
+
   ## trickster Ingress annotations
   ##
   annotations: {}
-  #   kubernetes.io/ingress.class: nginx
   #   kubernetes.io/tls-acme: 'true'
 
   ## trickster Ingress additional labels
