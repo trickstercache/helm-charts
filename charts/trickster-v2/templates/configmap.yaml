@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "trickster.fullname" . }}
+  {{- if .Values.configmapAnnotations }}
+  annotations:
+  {{- toYaml .Values.configmapAnnotations | nindent 4 }}
+  {{- end }}
+  labels:
+    {{- include "trickster.labels" . | nindent 4 }}
+    {{- if .Values.configmapLabels }}
+    {{- toYaml .Values.configmapLabels | nindent 4 }}
+    {{- end }}
+data:
+  config.yaml: |
+    {{- include "trickster.config" . | nindent 4 }}

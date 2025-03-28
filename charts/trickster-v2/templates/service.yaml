@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "trickster.fullname" . }}
+  {{- if .Values.service.annotations }}
+  annotations:
+  {{- toYaml .Values.service.annotations | indent 4 }}
+  {{- end }}
+  labels:
+    {{- include "trickster.labels" . | nindent 4 }}
+    {{- if .Values.service.labels }}
+    {{- toYaml .Values.service.labels | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.servicePort }}
+      targetPort: http
+{{- if .Values.service.serviceNodePort }}
+      nodePort: {{ .Values.service.serviceNodePort }}
+{{- end }}
+      protocol: TCP
+      name: http
+    - name: http-metrics
+      port: {{ .Values.service.metricsPort }}
+{{- if .Values.service.metricsNodePort }}
+      nodePort: {{ .Values.service.metricsNodePort }}
+{{- end }}
+      protocol: TCP
+      targetPort: metrics
+  selector:
+    {{- include "trickster.selectorLabels" . | nindent 4 }}

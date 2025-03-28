@@ -1,0 +1,27 @@
+{{- if .Values.prometheusOperator.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "trickster.fullname" . }}
+{{- if .Values.prometheusOperator.serviceMonitor.annotations }}
+  annotations:
+{{ toYaml .Values.prometheusOperator.serviceMonitor.annotations | indent 4 }}
+{{- end }}
+  labels:
+    {{- include "trickster.labels" . | nindent 4 }}
+{{- if .Values.prometheusOperator.serviceMonitor.labels }}
+{{ toYaml .Values.prometheusOperator.serviceMonitor.labels | indent 4 }}
+{{- end }}
+spec:
+  jobLabel: {{ template "trickster.name" . }}
+  selector:
+    matchLabels:
+      {{- include "trickster.selectorLabels" . | nindent 6 }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace | quote }}
+  endpoints:
+  - port: http-metrics
+    path: /metrics
+    interval: {{ .Values.prometheusOperator.serviceMonitor.interval }}
+{{- end }}

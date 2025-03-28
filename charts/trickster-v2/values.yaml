@@ -1,0 +1,261 @@
+# Default values for trickster.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Tricksters application config file. Specify a full YAML file
+# Must specify:
+# - at least one backend
+# - config.frontend.listen_port
+# - config.metrics.listen_port
+# Note:
+# - Some config values are injected by the chart, but you may override them as needed. Examples:
+# - caches.default.badger.directory
+# - caches.default.badger.value_directory
+# - caches.default.bbolt.filename
+# - caches.default.filesystem.cache_path
+#
+# Full Reference:
+# - https://github.com/trickstercache/trickster/blob/main/docs/configuring.md
+# - https://github.com/trickstercache/trickster/blob/main/examples/conf/example.full.yaml
+config:
+  backends:
+    default:
+      provider: prometheus
+      origin_url: http://prometheus-server:80
+      is_default: true
+  frontend:
+    listen_port: 8000
+  metrics:
+    listen_port: 8080
+  logging:
+    log_level: info
+
+# Configure extra command line arguments to the Trickster binary.
+# Enforced by the chart: the config flag is directed to the mounted ConfigMap,
+# and ports are set to listen on the respective `service.*port` values.
+extraArgs: []
+# - --someFlag=value
+
+extraEnv: {}
+# SOME_ENV_VAR: value
+
+# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+replicaCount: 1
+
+# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+image:
+  repository: ghcr.io/trickstercache/trickster
+  # This sets the pull policy for images.
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""
+
+# This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  labels: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+service:
+  labels: {}
+  annotations: {}
+  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+  type: ClusterIP
+  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+  servicePort: 80
+  # Configure the port that Trickster will listen on to serve metrics
+  metricsPort: 8080
+  # Enable node ports for the service endpoint
+  # serviceNodePort: 30000
+  # Enable node ports for the metrics endpoint
+  # metricsNodePort: 30001
+
+# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress:
+  enabled: false
+  className: ""
+  labels: {}
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: trickster.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: trickster-tls
+  #    hosts:
+  #      - trickster.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+    initialDelaySeconds: 0
+    periodSeconds: 5
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+    initialDelaySeconds: 0
+    periodSeconds: 5
+
+# This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+autoscaling:
+  hpaLabels: {}
+  hpaAnnotations: {}
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+persistentVolume:
+  ## If true, Trickster will create/use a Persistent Volume Claim
+  ## If false, use emptyDir
+  ##
+  enabled: true
+  ## Trickster data Persistent Volume access modes
+  ## Must match those of existing PV or dynamic provisioner
+  ## Ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+  ##
+  accessModes:
+    - ReadWriteOnce
+  ## Trickster data Persistent Volume labels
+  ##
+  labels: {}
+  ## Trickster data Persistent Volume annotations
+  annotations: {}
+  ## Trickster data Persistent Volume existing claim name
+  ## Requires persistentVolume.enabled: true
+  ## If defined, PVC must be created manually before volume will be bound
+  existingClaim: ""
+  ## Trickster data Persistent Volume mount root path
+  ##
+  mountPath: /data
+  ## Trickster data Persistent Volume size
+  ##
+  size: 8Gi
+  ## Trickster data Persistent Volume Storage Class
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  # storageClass: "-"
+  ## Subdirectory of Trickster data Persistent Volume to mount
+  ## Useful if the volume's root directory is not empty
+  ##
+  subPath: ""
+  ## Persistent Volume Claim Selector
+  ## Useful if Persistent Volumes have been provisioned in advance
+  ## Ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#selector
+  ##
+  # selector:
+  #  matchLabels:
+  #    release: "stable"
+  #  matchExpressions:
+  #    - { key: environment, operator: In, values: [ dev ] }
+
+  ## Persistent Volume Name
+  ## Useful if Persistent Volumes have been provisioned in advance and you want to use a specific one
+  ##
+  # volumeName: ""
+
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# ---------------------------------------------------------------
+# Extra Annotations / Labels
+
+# This is for setting Kubernetes Annotations to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+# This is for setting Kubernetes Labels to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+podLabels: {}
+
+deploymentAnnotations: {}
+deploymentLabels: {}
+configmapAnnotations: {}
+configmapLabels: {}
+
+
+# ---------------------------------------------------------------
+# Extra configurations
+
+# Configure a Prometheus Operator Service Monitor definition for the Trickster Deployment
+prometheusOperator:
+  serviceMonitor:
+    enabled: false
+    interval: 30s
+    labels: {}
+    annotations: {}
+
+# Extra resources to deploy with chart
+extra: []
+  # - |
+  #   apiVersion: v1
+  #   kind: ConfigMap
+  #   metadata:
+  #   labels:
+  #     name: TBD
+  #   data:
+  #     key: "value"
