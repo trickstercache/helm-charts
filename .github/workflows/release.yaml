@@ -1,18 +1,17 @@
 name: Release Chart(s)
-permissions: {}
 
 on:
   push:
-    # branches:
-    #   - main
+    branches:
+      - main
 
 jobs:
   release:
     permissions:
-      contents: write # to push chart release and create a release (helm/chart-releaser-action)
+      contents: read
       packages: write # needed for ghcr access
       id-token: write # needed for keyless signing
-
+      attestations: write
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout Code

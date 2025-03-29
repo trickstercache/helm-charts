@@ -2,5 +2,11 @@ apiVersion: v2
 name: trickster-v2
 description: A Helm chart for managing a Trickster Deployment
 type: application
-version: 0.0.0
-appVersion: "2.0.0-beta-tbd"
+# version of the chart
+version: 1.0.0
+# trickster application version this chart is compatible with
+appVersion: "2"
+maintainers:
+  - name: jranson
+  - name: LimitlessEarth
+  - name: crandles

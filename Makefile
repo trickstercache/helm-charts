@@ -1,6 +1,7 @@
 TRICKSTER_ORG ?= trickstercache
 IMAGE_REPO ?= ghcr.io/$(TRICKSTER_ORG)/trickster
 IMAGE_TAG ?= main
+SHELL := /bin/bash
 
 .PHONY: uninstall
 uninstall:
@@ -10,9 +11,11 @@ uninstall:
 install: uninstall
 	helm upgrade trickster charts/trickster-v2 --install --set image.repository=$(IMAGE_REPO) --set image.tag=$(IMAGE_TAG) --set service.serviceNodePort=31209 --set service.type=NodePort
 
+.PHONY: install-with-pvc
 install-with-pvc: uninstall
 	helm upgrade trickster charts/trickster-v2 --install --set image.repository=$(IMAGE_REPO) --set image.tag=$(IMAGE_TAG) --set service.serviceNodePort=31209 --set service.type=NodePort --set persistentVolume.enabled=true --set persistentVolume.storageClass=openebs-hostpath
 
+.PHONY: install-with-ingress
 install-with-ingress: uninstall
 	helm upgrade trickster charts/trickster-v2 --install --set image.repository=$(IMAGE_REPO) --set image.tag=$(IMAGE_TAG)  --set ingress.enabled=true
 
@@ -20,6 +23,8 @@ install-with-ingress: uninstall
 query:
 	open http://localhost:31209/query
 
+# NOTE: must set trickster.local in /etc/host to 127.0.0.1
+.PHONY: query-ingress
 query-ingress:
 	open http://trickster.local/query
 	# open http://trickster.local/query
