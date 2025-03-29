@@ -1,0 +1,16 @@
+apiVersion: kind.x-k8s.io/v1alpha4
+kind: Cluster
+name: trickster
+nodes:
+- role: control-plane
+  extraPortMappings:
+  - containerPort: 31209 # Expose trickster NodePort
+    hostPort: 31209
+    listenAddress: "0.0.0.0"
+    protocol: tcp
+  - containerPort: 80 # Expose 80 for accessing trickster via nginx
+    hostPort: 80
+    protocol: TCP
+  - containerPort: 443 # Expose 80 for accessing trickster via nginx
+    hostPort: 443
+    protocol: TCP
