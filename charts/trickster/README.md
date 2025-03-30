@@ -1,15 +1,11 @@
-# trickster
+# trickster helm chart
 
-[Trickster](https://github.com/tricksterproxy/trickster) is an HTTP Reverse Proxy Cache and time series query accelerator.
+## Chart goals / guidelines
+- Should support latest Kubernetes version (Starting with 1.30+)
+- Should support the latest major version of Trickster
+- Should support the latest minor version of Trickster
+- Should not overly abstract Trickster configuration file
 
-## Introduction
-
-This chart bootstraps a [Trickster](https://github.com/tricksterproxy/trickster) deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
-
-## Configuration
-
-values.yaml in this directory is well-documented for all configuration values
-
-## Releases
-
-Releases are automatically generated and published using GitHub Actions. To trigger the action and publish a release, a project maintainer will push the targeted release to a branch named for the release (e.g., `trickster-charts-v1.5.0`).
+## Chart capabilities
+- Simple integration with Prometheus Operator or Prometheus Annotation-based Service Discovery
+- Arbitrary YAML may be included via the `extraYaml` key within a `values.yaml`

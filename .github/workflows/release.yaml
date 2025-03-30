@@ -12,7 +12,7 @@ jobs:
       packages: write # needed for ghcr access
       id-token: write # needed for keyless signing
       attestations: write
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4

@@ -9,15 +9,15 @@ uninstall:
 
 .PHONY: install
 install: uninstall
-	helm upgrade trickster charts/trickster-v2 --install --set image.repository=$(IMAGE_REPO) --set image.tag=$(IMAGE_TAG) --set service.serviceNodePort=31209 --set service.type=NodePort
+	helm upgrade trickster charts/trickster --install --set image.repository=$(IMAGE_REPO) --set image.tag=$(IMAGE_TAG) --set service.serviceNodePort=31209 --set service.type=NodePort
 
 .PHONY: install-with-pvc
 install-with-pvc: uninstall
-	helm upgrade trickster charts/trickster-v2 --install --set image.repository=$(IMAGE_REPO) --set image.tag=$(IMAGE_TAG) --set service.serviceNodePort=31209 --set service.type=NodePort --set persistentVolume.enabled=true --set persistentVolume.storageClass=openebs-hostpath
+	helm upgrade trickster charts/trickster --install --set image.repository=$(IMAGE_REPO) --set image.tag=$(IMAGE_TAG) --set service.serviceNodePort=31209 --set service.type=NodePort --set persistentVolume.enabled=true --set persistentVolume.storageClass=openebs-hostpath
 
 .PHONY: install-with-ingress
 install-with-ingress: uninstall
-	helm upgrade trickster charts/trickster-v2 --install --set image.repository=$(IMAGE_REPO) --set image.tag=$(IMAGE_TAG)  --set ingress.enabled=true
+	helm upgrade trickster charts/trickster --install --set image.repository=$(IMAGE_REPO) --set image.tag=$(IMAGE_TAG)  --set ingress.enabled=true
 
 .PHONY: query
 query:
@@ -27,11 +27,10 @@ query:
 .PHONY: query-ingress
 query-ingress:
 	open http://trickster.local/query
-	# open http://trickster.local/query
 
 .PHONY: logs
 logs:
-	kubectl logs -f deploy/trickster-trickster-v2
+	kubectl logs -f deploy/trickster-trickster
 
 .PHONY: install-prom
 install-prom:
@@ -57,16 +56,13 @@ setup-kind:
 
 .PHONY: package
 package:
-	helm package charts/trickster-v2 --destination charts
+	helm package charts/trickster --destination charts
 
 GITHUB_REPOSITORY_OWNER ?= $(TRICKSTER_ORG)
 GHCR_REPO ?= ghcr.io/$(GITHUB_REPOSITORY_OWNER)/charts
 .PHONY: publish
 publish: package
 	@for pkg in charts/*.tgz; do \
-		if [[ "$$pkg" =~ "charts/trickster-1" ]]; then \
-			continue; \
-		fi; \
 		echo "Publishing $${pkg} to $(GHCR_REPO)"; \
 		helm push "$${pkg}" "oci://$(GHCR_REPO)"; \
 	done

@@ -7,23 +7,23 @@ This functionality is in beta and is subject to change. The code is provided as-
 
 ## Usage
 
-Note: the `trickster-v2` helm chart should be compatible with any Trickster v2.x release.
+Note: the `trickster` helm chart should be compatible with any Trickster v2.x release.
 
 [Helm](https://helm.sh) must be installed to use the charts.
 Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
 
 Once Helm is set up properly, query for the latest (v1.x) trickster helm chart:
 ```console
-helm show chart oci://ghcr.io/trickstercache/charts/trickster-v2 --version '^1'
+helm show chart oci://ghcr.io/trickstercache/charts/trickster --version '^2'
 ```
 Install trickster via:
 ```console
 # install latest chart
-helm install trickster oci://ghcr.io/trickstercache/charts/trickster-v2
+helm install trickster oci://ghcr.io/trickstercache/charts/trickster
 # install the latest (via semver query)
-helm install trickster oci://ghcr.io/trickstercache/charts/trickster-v2 --version '^1'
+helm install trickster oci://ghcr.io/trickstercache/charts/trickster --version '^2'
 # install a specific version of the trickster chart
-helm install trickster oci://ghcr.io/trickstercache/charts/trickster-v2:1.0.0
+helm install trickster oci://ghcr.io/trickstercache/charts/trickster:2.0.0
 ```
 
 ## Contributing

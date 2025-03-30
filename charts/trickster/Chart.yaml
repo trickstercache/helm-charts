@@ -1,14 +1,17 @@
-apiVersion: v1
-appVersion: "1.1"
-description: Trickster is an HTTP Reverse Proxy Cache and time series query accelerator.
+apiVersion: v2
 name: trickster
-version: 1.5.6
-home: https://github.com/tricksterproxy/trickster
-icon: https://helm.tricksterproxy.io/img/trickster-horizontal.png
-sources:
-  - https://github.com/tricksterproxy/trickster
-engine: gotpl
-tillerVersion: ">=2.8.0"
+description: A Helm chart for managing a Trickster Deployment
+type: application
+# version of the chart
+# Note:
+# - Starting at 2.0.0 so that chart release is not confused with chart built for v1.x release
+# - This version is the chart version and is different from the trickster application version
+version: 2.0.0
+# trickster application version this chart is compatible with
+# Note:
+# - This chart should be compatible with any trickster v2.x release.
+# - Specify a trickster release version at install time: helm install ... --set image.tag=2.3.4
+appVersion: "2"
 maintainers:
   - name: jranson
   - name: LimitlessEarth
