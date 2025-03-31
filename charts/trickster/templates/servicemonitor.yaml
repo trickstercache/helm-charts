@@ -1,29 +1,27 @@
-{{- if .Values.prometheus.serviceMonitor.enabled }}
+{{- if .Values.prometheusOperator.serviceMonitor.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ template "trickster.fullname" . }}
-  namespace: {{ .Release.Namespace | quote }}
+  name: {{ include "trickster.fullname" . }}
+{{- if .Values.prometheusOperator.serviceMonitor.annotations }}
+  annotations:
+{{ toYaml .Values.prometheusOperator.serviceMonitor.annotations | indent 4 }}
+{{- end }}
   labels:
-    app: {{ template "trickster.name" . }}
-    {{- include "trickster.labels" . | indent 4 }}
-{{- if .Values.prometheus.serviceMonitor.labels }}
-{{ toYaml .Values.prometheus.serviceMonitor.labels | indent 4 }}
+    {{- include "trickster.labels" . | nindent 4 }}
+{{- if .Values.prometheusOperator.serviceMonitor.labels }}
+{{ toYaml .Values.prometheusOperator.serviceMonitor.labels | indent 4 }}
 {{- end }}
 spec:
   jobLabel: {{ template "trickster.name" . }}
   selector:
     matchLabels:
-      app: {{ template "trickster.name" . }}
-      {{- include "trickster.labels" . | indent 6 }}
-{{- if .Values.service.labels }}
-{{ toYaml .Values.service.labels | indent 4 }}
-{{- end }}
+      {{- include "trickster.selectorLabels" . | nindent 6 }}
   namespaceSelector:
     matchNames:
       - {{ .Release.Namespace | quote }}
   endpoints:
   - port: http-metrics
     path: /metrics
-    interval: {{ .Values.prometheus.serviceMonitor.interval }}
+    interval: {{ .Values.prometheusOperator.serviceMonitor.interval }}
 {{- end }}

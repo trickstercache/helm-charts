@@ -1,126 +1,125 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-{{- if .Values.deploymentAnnotations }}
+  name: {{ include "trickster.fullname" . }}
+  {{- if .Values.deploymentAnnotations }}
   annotations:
-{{ toYaml .Values.deploymentAnnotations | indent 4 }}
-{{- end }}
+  {{- toYaml .Values.deploymentAnnotations | nindent 4 }}
+  {{- end }}
   labels:
-    app: {{ template "trickster.name" . }}
-    {{- include "trickster.labels" . | indent 4 }}
-  name: {{ template "trickster.fullname" . }}
+    {{- include "trickster.labels" . | nindent 4 }}
+    {{- if .Values.deploymentLabels }}
+    {{- toYaml .Values.deploymentLabels | nindent 4 }}
+    {{- end }}
 spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
-      app: {{ template "trickster.name" . }}
-      {{- include "trickster.selectors" . | indent 6 }}
-  replicas: {{ .Values.replicaCount }}
-  {{- if .Values.strategy }}
-  strategy:
-{{ toYaml .Values.strategy | indent 4 }}
-  {{- end }}
+      {{- include "trickster.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
         checksum/trickster-cfg: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-    {{- if .Values.podAnnotations }}        
-{{ toYaml .Values.podAnnotations | indent 8 }}
-    {{- end }}    
+      {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
-        app: {{ template "trickster.name" . }}
-        {{- include "trickster.labels" . | indent 8 }}
+        {{- include "trickster.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
-{{- if .Values.affinity }}
-      affinity:
-{{ toYaml .Values.affinity | indent 8 }}
-{{- end }}
-{{- if .Values.schedulerName }}
-      schedulerName: "{{ .Values.schedulerName }}"
-{{- end }}
-{{- if .Values.priorityClassName }}
-      priorityClassName: "{{ .Values.priorityClassName }}"
-{{- end }}    
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "trickster.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
-        - name: {{ template "trickster.name" . }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-        {{- if .Values.extraEnv }}
+        - name: {{ .Chart.Name }}
+          {{- if .Values.extraEnv }}
           env:
             {{- range $key, $value := .Values.extraEnv }}
             - name: {{ $key }}
               value: {{ $value }}
             {{- end }}
-        {{- end }}
-        {{- if .Values.extraArgs }}
+          {{- end }}
           args:
+            - --config=/etc/trickster/config.yaml
+          {{- if .Values.extraArgs }}
           {{- range $key, $value := .Values.extraArgs }}
             - --{{ $key }}={{ $value }}
           {{- end }}
-        {{- end }}
-          volumeMounts:
-            - name: cfg-volume
-              mountPath: /etc/trickster
-          {{- range $key, $value := .Values.volumes }}
-          {{- range $.Values.caches }}
-          {{- if eq .volumeName $key }}
-            - name: cache-volume-{{ $key }}
-              mountPath: {{ $value.mountPath }}
-              subPath: {{ .name }}
           {{- end }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.servicePort }}
+              containerPort: {{ include "trickster.proxyPort" . }}
               protocol: TCP
             - name: metrics
-              containerPort: {{ .Values.service.metricsPort }}
+              containerPort: {{ include "trickster.metricsPort" . }}
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /trickster/ping
               port: http
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
           readinessProbe:
             httpGet:
               path: /trickster/ping
               port: http
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          {{- with .Values.resources }}
           resources:
-{{ toYaml .Values.resources | indent 12 }}
-    {{- if .Values.imagePullSecrets }}
-      imagePullSecrets:
-      {{ toYaml .Values.imagePullSecrets | indent 2 }}
-    {{- end }}
-    {{- if .Values.nodeSelector }}
-      nodeSelector:
-{{ toYaml .Values.nodeSelector | indent 8 }}
-    {{- end }}
-    {{- if .Values.securityContext }}
-      securityContext:
-{{ toYaml .Values.securityContext | indent 8 }}
-    {{- end }}
-    {{- if .Values.tolerations }}
-      tolerations:
-{{ toYaml .Values.tolerations | indent 8 }}
-    {{- end }}
-    {{- if .Values.affinity }}
-      affinity:
-{{ toYaml .Values.affinity | indent 8 }}
-    {{- end }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: cfg-volume
+              mountPath: /etc/trickster
+            - name: storage
+              mountPath: {{ .Values.persistentVolume.mountPath | default "/data" }}
+              subPath: {{ .Values.persistentVolume.subPath | default ""}}
+          {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       volumes:
-        - name: cfg-volume
-          configMap:
-            name: {{ template "trickster.fullname" . }}
-            items:
-              - key: trickster.conf
-                path: trickster.conf
-      {{- range $key, $value := .Values.volumes }}
-      {{- if $value.enabled }}
-        - name: cache-volume-{{ $key }}
-        {{- if eq $value.type "persistentVolume" }}
-          persistentVolumeClaim:
-            claimName: {{ if .existingClaim }}{{ .existingClaim }}{{- else }}{{-  printf "trickster-%s-claim" $key -}}{{- end }}
-        {{- else }}
-          emptyDir: {}
-        {{- end }}
+      - name: cfg-volume
+        configMap:
+          name: {{ template "trickster.fullname" . }}
+          items:
+            - key: config.yaml
+              path: config.yaml
+      - name: storage
+      {{- if .Values.persistentVolume.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ if .Values.persistentVolume.existingClaim }}{{ .Values.persistentVolume.existingClaim }}{{- else }}{{ template "trickster.fullname" . }}{{- end }}
+      {{- else }}
+        emptyDir: {}
       {{- end }}
+      {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
       {{- end }}
