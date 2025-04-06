@@ -39,6 +39,12 @@ extraArgs: []
 extraEnv: {}
 # SOME_ENV_VAR: value
 
+# Configure environment variables from a Kubernetes Secret
+envSecrets: []
+# - name: SOME_ENV_VAR
+#   secretName: some-secret
+#   secretKey: some-key
+
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 replicaCount: 1
 

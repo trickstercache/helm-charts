@@ -6,7 +6,7 @@ type: application
 # Note:
 # - Starting at 2.0.0 so that chart release is not confused with chart built for v1.x release
 # - This version is the chart version and is different from the trickster application version
-version: 2.0.0
+version: 2.1.0
 # trickster application version this chart is compatible with
 # Note:
 # - This chart should be compatible with any trickster v2.x release.
