@@ -3,6 +3,11 @@ IMAGE_REPO ?= ghcr.io/$(TRICKSTER_ORG)/trickster
 IMAGE_TAG ?= main
 SHELL := /bin/bash
 
+.PHONY: lint
+lint:
+	helm lint charts/*
+	ct lint
+
 .PHONY: uninstall
 uninstall:
 	helm uninstall trickster || true
