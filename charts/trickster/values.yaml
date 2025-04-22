@@ -255,6 +255,16 @@ prometheusOperator:
     labels: {}
     annotations: {}
 
+# Configure extra containers to deploy with Trickster. Contents should be a list of extra container specifications.
+additionalContainers: []
+# - name: foo
+#   image: busybox
+#   command: ["/bin/sh", "-c"]
+#   args: ["echo hello world"]
+#   volumeMounts:
+#   securityContext:
+#   ...
+
 # Extra resources to deploy with chart
 extra: []
   # - |
