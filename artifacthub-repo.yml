@@ -1,0 +1,19 @@
+# Artifact Hub repository metadata file.
+#
+# This file is used to claim ownership of the historical Trickster Helm chart
+# listing on Artifact Hub (https://artifacthub.io/packages/helm/trickster/trickster),
+# per https://artifacthub.io/docs/topics/repositories/#ownership-claim and
+# https://github.com/trickstercache/helm-charts/issues/34.
+#
+# Artifact Hub reads this file from the listing's repository URL, i.e. it must
+# be served next to index.yaml by the Helm chart repository HTTP server (the
+# gh-pages branch of this repository). The user performing the claim must be
+# listed under `owners`, and the email must match their Artifact Hub sign-in.
+repositoryID: cffc2b94-ed2e-4f72-bc0d-99a0bfaa17ca
+owners:
+  - name: jranson
+    email: james@ranson.org
+  - name: crandles
+    email: randles.chris@gmail.com
+  - name: LimitlessEarth
+    email: adamross1126@gmail.com
