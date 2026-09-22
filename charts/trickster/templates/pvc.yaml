@@ -1,5 +1,6 @@
 {{- if .Values.persistentVolume.enabled -}}
 {{- if not .Values.persistentVolume.existingClaim -}}
+{{- if not .Values.statefulSet.enabled -}}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -15,24 +16,7 @@ metadata:
     {{- toYaml .Values.persistentVolume.labels | nindent 4 }}
     {{- end }}
 spec:
-  accessModes:
-{{ toYaml .Values.persistentVolume.accessModes | indent 4 }}
-{{- if .Values.persistentVolume.storageClass }}
-{{- if (eq "-" .Values.persistentVolume.storageClass) }}
-  storageClassName: ""
-{{- else }}
-  storageClassName: "{{ .Values.persistentVolume.storageClass }}"
-{{- end }}
-{{- end }}
-  resources:
-    requests:
-      storage: "{{ .Values.persistentVolume.size }}"
-{{- if .Values.persistentVolume.selector }}
-  selector:
-    {{- toYaml .Values.persistentVolume.selector | nindent 4 }}
-{{- end }}
-{{- if .Values.persistentVolume.volumeName }}
-  volumeName: "{{ .Values.persistentVolume.volumeName }}"
-{{- end }}
+  {{- include "trickster.pvcSpec" . | nindent 2 }}
+{{- end -}}
 {{- end -}}
 {{- end -}}

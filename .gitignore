@@ -2,3 +2,6 @@
 /charts/*/charts
 /charts/*/requirements.lock
 charts/*.tgz
+
+# Local chart packaging output (also used by the release workflow)
+dist/

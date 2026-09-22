@@ -1,5 +1,8 @@
+{{- include "trickster.validatePersistence" . -}}
+{{- $kind := include "trickster.workloadKind" . -}}
+{{- $perPodClaims := eq (include "trickster.useVolumeClaimTemplates" .) "true" -}}
 apiVersion: apps/v1
-kind: Deployment
+kind: {{ $kind }}
 metadata:
   name: {{ include "trickster.fullname" . }}
   {{- if .Values.deploymentAnnotations }}
@@ -14,6 +17,27 @@ metadata:
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  {{- if eq $kind "StatefulSet" }}
+  serviceName: {{ include "trickster.headlessServiceName" . }}
+  podManagementPolicy: {{ .Values.statefulSet.podManagementPolicy }}
+  {{- with .Values.statefulSet.updateStrategy }}
+  updateStrategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.statefulSet.persistentVolumeClaimRetentionPolicy }}
+  persistentVolumeClaimRetentionPolicy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- else if .Values.deploymentStrategy }}
+  strategy:
+    {{- toYaml .Values.deploymentStrategy | nindent 4 }}
+  {{- else if and .Values.persistentVolume.enabled (not (has "ReadWriteMany" .Values.persistentVolume.accessModes)) }}
+  # A ReadWriteOnce claim cannot be attached to the outgoing and incoming pod at
+  # the same time, which leaves a RollingUpdate stuck forever. Recreate releases
+  # the volume first. Override with deploymentStrategy if your storage allows it.
+  strategy:
+    type: Recreate
   {{- end }}
   selector:
     matchLabels:
@@ -111,12 +135,14 @@ spec:
           items:
             - key: config.yaml
               path: config.yaml
+      {{- if not $perPodClaims }}
       - name: storage
       {{- if .Values.persistentVolume.enabled }}
         persistentVolumeClaim:
           claimName: {{ if .Values.persistentVolume.existingClaim }}{{ .Values.persistentVolume.existingClaim }}{{- else }}{{ template "trickster.fullname" . }}{{- end }}
       {{- else }}
         emptyDir: {}
+      {{- end }}
       {{- end }}
       {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
@@ -133,3 +159,20 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+  {{- if $perPodClaims }}
+  # Each pod gets its own claim, so replicas never contend for one volume.
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+        {{- if .Values.persistentVolume.annotations }}
+        annotations:
+          {{- toYaml .Values.persistentVolume.annotations | nindent 10 }}
+        {{- end }}
+        labels:
+          {{- include "trickster.labels" . | nindent 10 }}
+          {{- if .Values.persistentVolume.labels }}
+          {{- toYaml .Values.persistentVolume.labels | nindent 10 }}
+          {{- end }}
+      spec:
+        {{- include "trickster.pvcSpec" . | nindent 8 }}
+  {{- end }}

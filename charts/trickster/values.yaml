@@ -46,7 +46,48 @@ envSecrets: []
 #   secretKey: some-key
 
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+# Note: with persistentVolume.enabled=true, running more than one replica requires
+# either statefulSet.enabled=true (one claim per pod) or a ReadWriteMany storage class.
+# The chart refuses to render a Deployment whose replicas would share one ReadWriteOnce claim.
 replicaCount: 1
+
+# Deployment update strategy. Only used when statefulSet.enabled is false.
+# When left empty, the chart defaults to `type: Recreate` if persistentVolume.enabled is true
+# and persistentVolume.accessModes does not include ReadWriteMany, because a ReadWriteOnce
+# claim cannot be attached to both the old and the new pod during a RollingUpdate and the
+# rollout would hang. Otherwise the Kubernetes default (RollingUpdate) applies.
+# Ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+deploymentStrategy: {}
+# deploymentStrategy:
+#   type: RollingUpdate
+#   rollingUpdate:
+#     maxSurge: 1
+#     maxUnavailable: 0
+
+# Run Trickster as a StatefulSet instead of a Deployment.
+# Recommended when persistentVolume.enabled is true and you want more than one replica or
+# zero-downtime rolling updates: each pod receives its own PersistentVolumeClaim from a
+# volumeClaimTemplate (named storage-<fullname>-<ordinal>), so replicas never contend for a
+# single ReadWriteOnce volume. persistentVolume.* settings are used for the claim template.
+# A headless Service named <fullname>-headless is created to govern the StatefulSet.
+# Note: switching an existing release between Deployment and StatefulSet requires the old
+# workload to be deleted first, since Kubernetes cannot convert one kind into the other.
+# deploymentAnnotations / deploymentLabels are applied to the StatefulSet as well.
+statefulSet:
+  enabled: false
+  # Start and stop pods concurrently; cache replicas do not depend on one another.
+  # Ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#pod-management-policies
+  podManagementPolicy: Parallel
+  # Ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  updateStrategy:
+    type: RollingUpdate
+  # Controls whether the per-pod claims are kept or deleted when the StatefulSet is deleted or
+  # scaled down (Kubernetes 1.27+). Leave empty for the Kubernetes default (Retain / Retain).
+  # Ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#persistentvolumeclaim-retention
+  persistentVolumeClaimRetentionPolicy: {}
+  # persistentVolumeClaimRetentionPolicy:
+  #   whenDeleted: Delete
+  #   whenScaled: Retain
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
@@ -171,11 +212,16 @@ volumeMounts: []
 persistentVolume:
   ## If true, Trickster will create/use a Persistent Volume Claim
   ## If false, use emptyDir
+  ## With statefulSet.enabled=false a single claim is created and shared by every replica,
+  ## which only works for one replica unless the access mode is ReadWriteMany (see replicaCount).
+  ## With statefulSet.enabled=true each pod gets its own claim via volumeClaimTemplates.
   ##
   enabled: true
   ## Trickster data Persistent Volume access modes
   ## Must match those of existing PV or dynamic provisioner
   ## Ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+  ## Include ReadWriteMany here (if your storage class supports it) to allow a Deployment with
+  ## multiple replicas and RollingUpdate to share the claim.
   ##
   accessModes:
     - ReadWriteOnce
@@ -187,6 +233,8 @@ persistentVolume:
   ## Trickster data Persistent Volume existing claim name
   ## Requires persistentVolume.enabled: true
   ## If defined, PVC must be created manually before volume will be bound
+  ## The claim is shared by all replicas (also when statefulSet.enabled=true), so it must be
+  ## ReadWriteMany for more than one replica.
   existingClaim: ""
   ## Trickster data Persistent Volume mount root path
   ##
@@ -238,6 +286,7 @@ podAnnotations: {}
 # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 podLabels: {}
 
+# Applied to the Deployment, or to the StatefulSet when statefulSet.enabled is true.
 deploymentAnnotations: {}
 deploymentLabels: {}
 configmapAnnotations: {}

@@ -1,0 +1,29 @@
+{{- if .Values.statefulSet.enabled -}}
+# Headless Service required to govern the StatefulSet. Client traffic should
+# continue to use the regular Service; this one intentionally omits the
+# http-metrics port so the ServiceMonitor does not scrape each pod twice.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "trickster.headlessServiceName" . }}
+  {{- if .Values.service.annotations }}
+  annotations:
+  {{- toYaml .Values.service.annotations | nindent 4 }}
+  {{- end }}
+  labels:
+    {{- include "trickster.labels" . | nindent 4 }}
+    {{- if .Values.service.labels }}
+    {{- toYaml .Values.service.labels | nindent 4 }}
+    {{- end }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - port: {{ .Values.service.servicePort }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "trickster.selectorLabels" . | nindent 4 }}
+{{- end }}
