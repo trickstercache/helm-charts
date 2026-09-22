@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   release:
     permissions:
@@ -13,6 +16,13 @@ jobs:
       id-token: write # needed for keyless signing
       attestations: write
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # One job per chart so each pushed OCI artifact gets its own attestation.
+        chart:
+          - trickster
+    env:
+      GHCR_REPO: ghcr.io/${{ github.repository_owner }}/charts
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -26,6 +36,26 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Push charts to GHCR
+      - name: Package chart
+        run: helm package charts/${{ matrix.chart }} --destination dist
+      - name: Push chart to GHCR
+        id: push
         run: |
-          make publish
+          set -o pipefail
+          helm push dist/${{ matrix.chart }}-*.tgz "oci://${GHCR_REPO}" | tee push.log
+          digest=$(sed -n 's/^Digest: //p' push.log)
+          if [[ -z "$digest" ]]; then
+            echo "::error::could not read the pushed chart digest from helm push output"
+            exit 1
+          fi
+          echo "digest=${digest}" >> "$GITHUB_OUTPUT"
+      # Signs a SLSA build provenance statement for the chart with the workflow's
+      # OIDC identity (Sigstore), records it in the repo's attestation store, and
+      # pushes it to GHCR next to the chart. Verify with:
+      #   gh attestation verify oci://ghcr.io/<owner>/charts/<chart>:<version> --owner <owner>
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.GHCR_REPO }}/${{ matrix.chart }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
